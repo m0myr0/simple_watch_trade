@@ -2,6 +2,23 @@
 
 // Import necessary modules
 const { TOKEN_PROGRAM_ID } = require('@solana/spl-token');
+const EXCHANGE_PROGRAM_IDS = [
+  "9xQeWvG816bUx9EPjHpxgXB1k1SgEKnyL7m7VFSqkWfN", // Serum DEX v3
+  "RVKd61ztZW9wL38L723QfD9xq4keqv5NjvQh5Rrkvh",   // Raydium Liquidity Pool
+  // Add other relevant exchange program IDs
+];
+const fs = require('fs');
+const path = require('path');
+const parsedLogPath = path.join(__dirname, '../logs/parsed.log');
+
+function logParsedData(parsedData) {
+  const logEntry = `[${new Date().toISOString()}] Parsed Data: ${JSON.stringify(parsedData, null, 2)}\n`;
+  fs.appendFile(parsedLogPath, logEntry, (err) => {
+    if (err) {
+      console.error('Error logging parsed data:', err);
+    }
+  });
+}
 
 // Function to parse a transaction
 function parseTransaction(transaction) {
@@ -14,6 +31,7 @@ function parseTransaction(transaction) {
     fee: transaction.meta?.fee || 0,
     transactionType: "Unknown",  // Placeholder, will update below
     tokens: [],
+    pairs: [],
   };
 
   // Account keys are needed for instruction parsing
@@ -29,10 +47,14 @@ function parseTransaction(transaction) {
         programName = "Token Program";
       } else if (programId.toString() === "11111111111111111111111111111111") {
         programName = "System Program";
+      } else if (EXCHANGE_PROGRAM_IDS.includes(programId.toString())) {
+        programName = "Exchange Program";
+        parsedData.transactionType = "Trade";
       }
 
       // Identify transaction type and relevant token information
       if (programName === "Token Program" && instruction.data) {
+        // This indicates an SPL token transfer
         parsedData.transactionType = "Transfer";
 
         // Extract token mint and amount info from token balances
@@ -50,14 +72,44 @@ function parseTransaction(transaction) {
       const preBalance = transaction.meta.preTokenBalances[idx];
       const postBalance = tokenBalance;
 
-      return {
+      const amountChange = parseFloat(postBalance.uiTokenAmount.amount) - parseFloat(preBalance.uiTokenAmount.amount);
+      const tokenInfo = {
         mint: postBalance.mint,
         owner: postBalance.owner,
-        amountChange: parseFloat(postBalance.uiTokenAmount.amount) - parseFloat(preBalance.uiTokenAmount.amount),
+        amountChange,
         decimals: postBalance.uiTokenAmount.decimals,
+        normalizedAmount: amountChange / Math.pow(10, postBalance.uiTokenAmount.decimals),
       };
+
+      // Determine whether the token is bought or sold
+      if (amountChange > 0) {
+        tokenInfo.action = "Buy";
+      } else if (amountChange < 0) {
+        tokenInfo.action = "Sell";
+      } else {
+        tokenInfo.action = "No Change";
+      }
+
+      return tokenInfo;
     });
+
+    // Pair buy and sell actions
+    const buys = parsedData.tokens.filter(token => token.action === 'Buy');
+    const sells = parsedData.tokens.filter(token => token.action === 'Sell');
+
+    while (buys.length > 0 && sells.length > 0) {
+      const buy = buys.shift();
+      const sell = sells.shift();
+
+      parsedData.pairs.push({
+        buy,
+        sell,
+      });
+    }
   }
+
+  // Log parsed data after parsing
+  logParsedData(parsedData);
 
   return parsedData;
 }
