@@ -1,81 +1,126 @@
 // src/parseTransaction.js
 // Base58 Decoder Implementation from BitcoinJS
-
-function base58Decode(input) {
-    const ALPHABET = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
-    const ALPHABET_MAP = {};
-    for (let i = 0; i < ALPHABET.length; i++) {
-      ALPHABET_MAP[ALPHABET.charAt(i)] = i;
-    }
-    const BASE = 58;
-  
-    if (input.length === 0) return Buffer.alloc(0);
-  
-    let bytes = [0];
-    for (let i = 0; i < input.length; i++) {
-      const c = input[i];
-      if (!(c in ALPHABET_MAP)) {
-        throw new Error(`Invalid character found: ${c}`);
-      }
-      let carry = ALPHABET_MAP[c];
-      for (let j = 0; j < bytes.length; ++j) {
-        carry += bytes[j] * BASE;
-        bytes[j] = carry & 0xff;
-        carry >>= 8;
-      }
-      while (carry > 0) {
-        bytes.push(carry & 0xff);
-        carry >>= 8;
-      }
-    }
-  
-    // Deal with leading zeros
-    for (let k = 0; k < input.length && input[k] === '1'; k++) {
-      bytes.push(0);
-    }
-  
-    return Buffer.from(bytes.reverse());
+function base58Decode(transaction) {
+  const ALPHABET = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
+  const ALPHABET_MAP = {};
+  for (let i = 0; i < ALPHABET.length; i++) {
+    ALPHABET_MAP[ALPHABET.charAt(i)] = i;
   }
-  
+  const BASE = 58;
+
+  if (input.length === 0) return Buffer.alloc(0);
+
+  let bytes = [0];
+  for (let i = 0; i < input.length; i++) {
+    const c = input[i];
+    if (!(c in ALPHABET_MAP)) {
+      throw new Error(`Invalid character found: ${c}`);
+    }
+    let carry = ALPHABET_MAP[c];
+    for (let j = 0; j < bytes.length; ++j) {
+      carry += bytes[j] * BASE;
+      bytes[j] = carry & 0xff;
+      carry >>= 8;
+    }
+    while (carry > 0) {
+      bytes.push(carry & 0xff);
+      carry >>= 8;
+    }
+  }
+
+  // Deal with leading zeros
+  for (let k = 0; k < input.length && input[k] === '1'; k++) {
+    bytes.push(0);
+  }
+
+  return Buffer.from(bytes.reverse());
+}
+
 // Import necessary modules
 const { TOKEN_PROGRAM_ID } = require('@solana/spl-token');
 
 // Function to parse a transaction
 function parseTransaction(transaction) {
-  const parsedData = {};
-  const { transaction: tx, meta } = transaction;
+  if (!transaction) return null;
 
-  // Extract basic information
-  parsedData.slot = transaction.slot;
-  parsedData.blockTime = transaction.blockTime;
-  parsedData.fee = meta.fee;
+  const parsedData = {
+    slot: transaction.slot,
+    blockTime: transaction.blockTime,
+    fee: transaction.meta?.fee || 0,
+    transactionType: "Unknown",  // Placeholder, will update below
+    tokens: [],
+    amount: 0,
+  };
 
-  // Extract token balances (pre and post)
-  parsedData.preTokenBalances = meta.preTokenBalances || [];
-  parsedData.postTokenBalances = meta.postTokenBalances || [];
+  // Account keys are needed for instruction parsing
+  const accountKeys = transaction.transaction?.message?.accountKeys || [];
 
-  // Extract logs (useful for debugging)
-  parsedData.logMessages = meta.logMessages || [];
+  if (transaction.transaction?.message?.instructions) {
+    transaction.transaction.message.instructions.forEach((instruction) => {
+      const programId = accountKeys[instruction.programIdIndex];
+      let programName = "Unknown Program";
 
-  // Extract and parse instructions
-  const instructions = tx.message.instructions;
-  parsedData.instructions = [];
+      // Determine program name by known program IDs
+      if (programId === "11111111111111111111111111111111") {
+        programName = "System Program";
+      } else if (programId === "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA") {
+        programName = "Token Program";
+      } else if (programId === "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL") {
+        programName = "Associated Token Program";
+      }
+      // Add specific program names here...
 
-  for (const instruction of instructions) {
-    const parsedInstruction = parseInstruction(instruction, tx.message);
-    parsedData.instructions.push(parsedInstruction);
+      // Identify transaction type and relevant token information
+      if (programName === "Token Program" && instruction.data) {
+        // Here you can add decoding logic for instruction.data if you have ABI information
+        // Placeholder: Just assuming if it's a Token Program, it's a transfer
+        parsedData.transactionType = "Transfer";
+
+        // Extract token mint and amount info
+        instruction.accounts.forEach((accountIndex) => {
+          const key = accountKeys[accountIndex];
+          parsedData.tokens.push(key);
+        });
+      } else if (programName === "Unknown Program" && instruction.data) {
+        // Placeholder for custom swap/buy/sell detection logic
+        if (instruction.data.includes("swap")) {
+          parsedData.transactionType = "Swap";
+        } else if (instruction.data.includes("buy")) {
+          parsedData.transactionType = "Buy";
+        } else if (instruction.data.includes("sell")) {
+          parsedData.transactionType = "Sell";
+        }
+      }
+    });
+  }
+
+  // Extract token balances to understand amounts transferred
+  if (transaction.meta?.postTokenBalances && transaction.meta?.preTokenBalances) {
+    parsedData.tokens = transaction.meta.postTokenBalances.map((tokenBalance, idx) => {
+      const preBalance = transaction.meta.preTokenBalances[idx];
+      const postBalance = tokenBalance;
+
+      return {
+        mint: postBalance.mint,
+        owner: postBalance.owner,
+        amountChange: parseFloat(postBalance.uiTokenAmount.amount) - parseFloat(preBalance.uiTokenAmount.amount),
+        decimals: postBalance.uiTokenAmount.decimals,
+      };
+    });
   }
 
   return parsedData;
 }
 
+
 // Helper function to parse individual instructions
 function parseInstruction(instruction, message) {
-  const programId = instruction.programId.toString();
+  const programIdIndex = instruction.programIdIndex;
+  const programId = message?.accountKeys?.[programIdIndex]?.toString() || 'Unknown';
   const parsedInstruction = {
     programId,
     program: identifyProgram(programId),
-    accounts: instruction.accounts.map((accIndex) => message.accountKeys[accIndex].toString()),
+    accounts: instruction.accounts?.map((accIndex) => message?.accountKeys?.[accIndex]?.toString() || 'Unknown') || [],
   };
 
   // Attempt to parse known instruction types
@@ -119,8 +164,8 @@ function parseSystemInstruction(instruction, message) {
   if (instructionType === 2) {
     // Transfer instruction
     const [fromAccountIndex, toAccountIndex] = instruction.accounts;
-    const fromAccount = message.accountKeys[fromAccountIndex].toString();
-    const toAccount = message.accountKeys[toAccountIndex].toString();
+    const fromAccount = message?.accountKeys?.[fromAccountIndex]?.toString() || 'Unknown';
+    const toAccount = message?.accountKeys?.[toAccountIndex]?.toString() || 'Unknown';
 
     // Ensure dataBuffer has enough bytes for amount
     if (dataBuffer.length >= 9) {
@@ -167,9 +212,9 @@ function parseTokenInstruction(instruction, message) {
 
   if (parsed.type === 'Transfer') {
     const [sourceIndex, destinationIndex, ownerIndex] = instruction.accounts;
-    const source = message.accountKeys[sourceIndex].toString();
-    const destination = message.accountKeys[destinationIndex].toString();
-    const owner = message.accountKeys[ownerIndex].toString();
+    const source = message?.accountKeys?.[sourceIndex]?.toString() || 'Unknown';
+    const destination = message?.accountKeys?.[destinationIndex]?.toString() || 'Unknown';
+    const owner = message?.accountKeys?.[ownerIndex]?.toString() || 'Unknown';
 
     // Ensure dataBuffer has enough bytes for amount
     if (dataBuffer.length >= 9) {
