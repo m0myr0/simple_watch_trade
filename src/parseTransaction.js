@@ -32,13 +32,14 @@ function parseTransaction(transaction) {
     transactionType: "Unknown",  // Placeholder, will update below
     tokens: [],
     pairs: [],
+    invokedPrograms: [],
   };
 
   // Account keys are needed for instruction parsing
   const accountKeys = transaction.transaction?.message?.accountKeys || [];
 
   if (transaction.transaction?.message?.instructions) {
-    transaction.transaction.message.instructions.forEach((instruction) => {
+    transaction.transaction.message.instructions.forEach((instruction, instructionIndex) => {
       const programId = accountKeys[instruction.programIdIndex];
       let programName = "Unknown Program";
 
@@ -68,9 +69,8 @@ function parseTransaction(transaction) {
 
   // Extract token balances to understand amounts transferred
   if (transaction.meta?.postTokenBalances && transaction.meta?.preTokenBalances) {
-    parsedData.tokens = transaction.meta.postTokenBalances.map((tokenBalance, idx) => {
+    parsedData.tokens = transaction.meta.postTokenBalances.map((postBalance, idx) => {
       const preBalance = transaction.meta.preTokenBalances[idx];
-      const postBalance = tokenBalance;
 
       const amountChange = parseFloat(postBalance.uiTokenAmount.amount) - parseFloat(preBalance.uiTokenAmount.amount);
       const tokenInfo = {
@@ -78,7 +78,7 @@ function parseTransaction(transaction) {
         owner: postBalance.owner,
         amountChange,
         decimals: postBalance.uiTokenAmount.decimals,
-        normalizedAmount: amountChange / Math.pow(10, postBalance.uiTokenAmount.decimals),
+        normalizedAmount: Math.abs(amountChange) / Math.pow(10, postBalance.uiTokenAmount.decimals),
       };
 
       // Determine whether the token is bought or sold
@@ -92,21 +92,23 @@ function parseTransaction(transaction) {
 
       return tokenInfo;
     });
+  }
 
-    // Pair buy and sell actions
-    const buys = parsedData.tokens.filter(token => token.action === 'Buy');
-    const sells = parsedData.tokens.filter(token => token.action === 'Sell');
+  // Match tokens as token1 and token2
+  if (parsedData.tokens.length >= 2) {
+    const buyToken = parsedData.tokens.find(token => token.action === "Buy");
+    const sellToken = parsedData.tokens.find(token => token.action === "Sell");
 
-    while (buys.length > 0 && sells.length > 0) {
-      const buy = buys.shift();
-      const sell = sells.shift();
-
-      parsedData.pairs.push({
-        buy,
-        sell,
-      });
+    if (buyToken && sellToken) {
+      parsedData.pairs.push({ token1: sellToken, token2: buyToken });
     }
   }
+
+  // Capture invoked programs
+  parsedData.invokedPrograms = transaction.meta.logMessages
+    ?.filter(message => message.includes("Program"))
+    .map(message => message.split(" ")[1])
+    .filter((value, index, self) => self.indexOf(value) === index); // Remove duplicates
 
   // Log parsed data after parsing
   logParsedData(parsedData);

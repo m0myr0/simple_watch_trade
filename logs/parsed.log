@@ -1,62 +1,92 @@
-[2024-10-22T12:05:13.682Z] Parsed Data: {
-  "transactionId": "5Tnb29ttHee2XVWrjNPMp2YfVyymAn9ghGPCAoXL484CV1zeXbsQszGdFUeevjjzqsbM8ndxw1gohvMMok9Tuuw2",
-  "slot": 297031587,
-  "blockTime": 1729591302,
-  "fee": 5000,
+[2024-10-22T13:15:57.186Z] Parsed Data: {
+  "transactionId": "5c9jRv3rzoLpRGnTmmJNkGviBg3A1b5fUjRGw8bobbBg8s64nEuwm96drBtfVdU3zNDpDQU7Psj1nW1Etj1Wo7n3",
+  "slot": 297052184,
+  "blockTime": 1729600938,
+  "fee": 5600,
   "transactionType": "Unknown",
   "tokens": [],
-  "pairs": []
+  "pairs": [],
+  "invokedPrograms": [
+    "ComputeBudget111111111111111111111111111111",
+    "11111111111111111111111111111111"
+  ]
 }
-[2024-10-22T12:05:15.636Z] Parsed Data: {
-  "transactionId": "59Mb6UmCPxqoK3JKmzt246ys74Yw7ozbY13y1PDojSzDf6tQX9nvCeLfbCRcHhGwqBDCA6CMXaE9kq4MowEBH5SC",
-  "slot": 297047382,
-  "blockTime": 1729598680,
+[2024-10-22T13:15:59.187Z] Parsed Data: {
+  "transactionId": "26MZtH9NutGwj1JczwxUc2j6PApzjmUfti1zgFmnX5ZTC4cnPtS1LmX3UTRyXmH8fqHg469EMHkzMYUAZER8GTQX",
+  "slot": 297056212,
+  "blockTime": 1729602861,
   "fee": 5000,
   "transactionType": "Unknown",
   "tokens": [
     {
-      "mint": "So11111111111111111111111111111111111111112",
+      "mint": "6DUC2E7zWy8F1dEVnoPpZGp6zsUwf3XG7jHDDagopump",
       "owner": "5Q544fKrFoe6tsEbD7S8EmxGTJYAKtTVhAW5Q5pge4j1",
-      "amountChange": -838056314,
-      "decimals": 9,
-      "normalizedAmount": -0.838056314,
-      "action": "Sell"
-    },
-    {
-      "mint": "HaL8cPcEZgwLaCbwyf6aAPh7rhw7iHck22zFXSNjpump",
-      "owner": "5Q544fKrFoe6tsEbD7S8EmxGTJYAKtTVhAW5Q5pge4j1",
-      "amountChange": 4471452090516,
+      "amountChange": 26860981126453,
       "decimals": 6,
-      "normalizedAmount": 4471452.090516,
+      "normalizedAmount": 26860981.126453,
       "action": "Buy"
     },
     {
       "mint": "So11111111111111111111111111111111111111112",
       "owner": "CxZBPPbJhx7XsUoGv2FGdcZbP13Jqefokp4qzfjAWUVq",
-      "amountChange": -4047919750792,
+      "amountChange": 4396170323,
       "decimals": 9,
-      "normalizedAmount": -4047.919750792,
+      "normalizedAmount": 4.396170323,
+      "action": "Buy"
+    },
+    {
+      "mint": "So11111111111111111111111111111111111111112",
+      "owner": "5Q544fKrFoe6tsEbD7S8EmxGTJYAKtTVhAW5Q5pge4j1",
+      "amountChange": -4396437929,
+      "decimals": 9,
+      "normalizedAmount": 4.396437929,
       "action": "Sell"
+    },
+    {
+      "mint": "So11111111111111111111111111111111111111112",
+      "owner": "8kUDgfmJQrMNB1h76FMc9JFxhJwwHmDFfNZhNWBZayv6",
+      "amountChange": -26860981126453,
+      "decimals": 9,
+      "normalizedAmount": 26860.981126453,
+      "action": "Sell"
+    },
+    {
+      "mint": "6DUC2E7zWy8F1dEVnoPpZGp6zsUwf3XG7jHDDagopump",
+      "owner": "8kUDgfmJQrMNB1h76FMc9JFxhJwwHmDFfNZhNWBZayv6",
+      "amountChange": 0,
+      "decimals": 6,
+      "normalizedAmount": 0,
+      "action": "No Change"
     }
   ],
   "pairs": [
     {
-      "buy": {
-        "mint": "HaL8cPcEZgwLaCbwyf6aAPh7rhw7iHck22zFXSNjpump",
-        "owner": "5Q544fKrFoe6tsEbD7S8EmxGTJYAKtTVhAW5Q5pge4j1",
-        "amountChange": 4471452090516,
-        "decimals": 6,
-        "normalizedAmount": 4471452.090516,
-        "action": "Buy"
-      },
-      "sell": {
+      "token1": {
         "mint": "So11111111111111111111111111111111111111112",
         "owner": "5Q544fKrFoe6tsEbD7S8EmxGTJYAKtTVhAW5Q5pge4j1",
-        "amountChange": -838056314,
+        "amountChange": -4396437929,
         "decimals": 9,
-        "normalizedAmount": -0.838056314,
+        "normalizedAmount": 4.396437929,
         "action": "Sell"
+      },
+      "token2": {
+        "mint": "6DUC2E7zWy8F1dEVnoPpZGp6zsUwf3XG7jHDDagopump",
+        "owner": "5Q544fKrFoe6tsEbD7S8EmxGTJYAKtTVhAW5Q5pge4j1",
+        "amountChange": 26860981126453,
+        "decimals": 6,
+        "normalizedAmount": 26860981.126453,
+        "action": "Buy"
       }
     }
+  ],
+  "invokedPrograms": [
+    "ComputeBudget111111111111111111111111111111",
+    "465wbCQF37WwvRssbBaSzrPKNUymMkFFWJUQPj4vn4NE",
+    "log:",
+    "675kPX9MHTjS2zt1qfr1NYHuzeLXfQM9H24wFSUt1Mp8",
+    "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
+    "11111111111111111111111111111111",
+    "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL",
+    "return:"
   ]
 }
