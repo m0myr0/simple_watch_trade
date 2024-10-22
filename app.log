@@ -1,0 +1,7 @@
+[2024-10-21T22:59:34.818Z] Fetching transactions for wallet: 49mPtDTXMG1EhnDyWwwmXKFhQxMsKBP6QKWmKDayyyAw
+[2024-10-21T22:59:37.067Z] Found signature: 5PaZScwyknnaDV2HDKq49DKYd1ipbnyNoj2D5od8eh2VGQ2pH5PMnj5DRSP49uy1zPKeiBJi6sgzMF7rmpi23RNf
+[2024-10-21T22:59:37.415Z] Error: instructions is not iterable
+[2024-10-21T23:03:52.052Z] No wallet addresses found in environment variables.
+[2024-10-21T23:04:21.852Z] Fetching transactions for wallet: 49mPtDTXMG1EhnDyWwwmXKFhQxMsKBP6QKWmKDayyyAw
+[2024-10-21T23:04:24.115Z] Found signature: 5PaZScwyknnaDV2HDKq49DKYd1ipbnyNoj2D5od8eh2VGQ2pH5PMnj5DRSP49uy1zPKeiBJi6sgzMF7rmpi23RNf
+[2024-10-21T23:04:24.464Z] Error: instructions is not iterable

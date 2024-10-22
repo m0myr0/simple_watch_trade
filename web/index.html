@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Watch Trade</title>
+</head>
+<body>
+    <h1>Recent Trades</h1>
+    <div id="trades"></div>
+    <script>
+        async function fetchTrades() {
+            const response = await fetch('http://localhost:3000');
+            const trades = await response.json();
+            const tradesDiv = document.getElementById('trades');
+            tradesDiv.innerHTML = trades.map(trade => `
+                <p>
+                    ${trade.wallet_public_key} - ${trade.token_symbol} - ${trade.trade_type} - 
+                    ${trade.amount} at $${trade.price} on ${trade.timestamp}
+                </p>
+            `).join('');
+        }
+
+        fetchTrades();
+    </script>
+</body>
+</html>

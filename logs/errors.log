@@ -1,0 +1,32 @@
+2024-10-21T13:34:26.999Z - Error: TypeError: Invalid URL
+    at new URL (node:internal/url:806:29)
+    at dispatchHttpRequest (/home/m0myr0/solcoding/simple_watch_trade/node_modules/axios/dist/node/axios.cjs:2770:20)
+    at /home/m0myr0/solcoding/simple_watch_trade/node_modules/axios/dist/node/axios.cjs:2690:5
+    at new Promise (<anonymous>)
+    at wrapAsync (/home/m0myr0/solcoding/simple_watch_trade/node_modules/axios/dist/node/axios.cjs:2670:10)
+    at http (/home/m0myr0/solcoding/simple_watch_trade/node_modules/axios/dist/node/axios.cjs:2708:10)
+    at Axios.dispatchRequest (/home/m0myr0/solcoding/simple_watch_trade/node_modules/axios/dist/node/axios.cjs:4135:10)
+    at Axios._request (/home/m0myr0/solcoding/simple_watch_trade/node_modules/axios/dist/node/axios.cjs:4415:33)
+    at Axios.request (/home/m0myr0/solcoding/simple_watch_trade/node_modules/axios/dist/node/axios.cjs:4282:25)
+    at Axios.httpMethod [as post] (/home/m0myr0/solcoding/simple_watch_trade/node_modules/axios/dist/node/axios.cjs:4454:19)
+    at Axios.request (/home/m0myr0/solcoding/simple_watch_trade/node_modules/axios/dist/node/axios.cjs:4287:41)
+    at async fetchTransactions (/home/m0myr0/solcoding/simple_watch_trade/src/watcher.js:9:22)
+    at async watchWallet (/home/m0myr0/solcoding/simple_watch_trade/src/watcher.js:45:24)
+    at async main (/home/m0myr0/solcoding/simple_watch_trade/src/main.js:11:5)
+2024-10-21T13:36:51.543Z - Error: TypeError: Invalid URL
+    at new URL (node:internal/url:806:29)
+    at dispatchHttpRequest (/home/m0myr0/solcoding/simple_watch_trade/node_modules/axios/dist/node/axios.cjs:2770:20)
+    at /home/m0myr0/solcoding/simple_watch_trade/node_modules/axios/dist/node/axios.cjs:2690:5
+    at new Promise (<anonymous>)
+    at wrapAsync (/home/m0myr0/solcoding/simple_watch_trade/node_modules/axios/dist/node/axios.cjs:2670:10)
+    at http (/home/m0myr0/solcoding/simple_watch_trade/node_modules/axios/dist/node/axios.cjs:2708:10)
+    at Axios.dispatchRequest (/home/m0myr0/solcoding/simple_watch_trade/node_modules/axios/dist/node/axios.cjs:4135:10)
+    at Axios._request (/home/m0myr0/solcoding/simple_watch_trade/node_modules/axios/dist/node/axios.cjs:4415:33)
+    at Axios.request (/home/m0myr0/solcoding/simple_watch_trade/node_modules/axios/dist/node/axios.cjs:4282:25)
+    at Axios.httpMethod [as post] (/home/m0myr0/solcoding/simple_watch_trade/node_modules/axios/dist/node/axios.cjs:4454:19)
+    at Axios.request (/home/m0myr0/solcoding/simple_watch_trade/node_modules/axios/dist/node/axios.cjs:4287:41)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async fetchTransactions (/home/m0myr0/solcoding/simple_watch_trade/src/watcher.js:9:22)
+    at async watchWallet (/home/m0myr0/solcoding/simple_watch_trade/src/watcher.js:54:24)
+    at async main (/home/m0myr0/solcoding/simple_watch_trade/src/main.js:11:5)
+2024-10-21T13:38:56.013Z - No response received: [object Object]
